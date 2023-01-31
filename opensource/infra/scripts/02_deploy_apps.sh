@@ -23,6 +23,11 @@ otelcollector["name"]="otel-collector"
 otelcollector["namespace"]="monitoring"
 otelcollector["mode"]="daemonset"
 
+# nodeexporter
+declare -A nodeexporter
+nodeexporter["name"]="nodeexporter"
+nodeexporter["namespace"]="monitoring"
+
 # prometheus
 declare -A prometheus
 prometheus["name"]="prometheus"
@@ -55,6 +60,7 @@ docker push "${DOCKERHUB_NAME}/${proxy[imageName]}"
 helm repo add jetstack https://charts.jetstack.io
 helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
 helm repo add newrelic-prometheus https://newrelic.github.io/newrelic-prometheus-configurator
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update
 
 # cert-manager
@@ -89,6 +95,17 @@ helm upgrade ${otelcollector[name]} \
   --set newrelicOtlpEndpoint="otlp.eu01.nr-data.net:4317" \
   --set newrelicLicenseKey=$NEWRELIC_LICENSE_KEY \
   "../helm/otelcollector"
+
+# node-exporter
+helm upgrade ${nodeexporter[name]} \
+  --install \
+  --wait \
+  --debug \
+  --create-namespace \
+  --namespace ${nodeexporter[namespace]} \
+  --set tolerations[0].effect="NoSchedule" \
+  --set tolerations[0].operator="Exists" \
+  "prometheus-community/prometheus-node-exporter"
 
 # prometheus
 helm upgrade ${prometheus[name]} \
