@@ -35,12 +35,19 @@ prometheus["namespace"]="monitoring"
 
 # proxy
 declare -A proxy
-proxy["name"]="proxy"
-proxy["tag"]="oss-proxy"
-proxy["imageName"]="${repoName}:oss-${proxy[name]}"
+proxy["name"]="proxy-oss"
+proxy["imageName"]="${repoName}:${proxy[name]}"
 proxy["namespace"]="apps"
 proxy["replicas"]=2
 proxy["port"]=8080
+
+# persistence
+declare -A persistence
+persistence["name"]="persistence-oss"
+persistence["imageName"]="${repoName}:${persistence[name]}"
+persistence["namespace"]="apps"
+persistence["replicas"]=2
+persistence["port"]=8080
 
 ####################
 ### Build & Push ###
@@ -51,6 +58,12 @@ docker build \
   --tag "${DOCKERHUB_NAME}/${proxy[imageName]}" \
   "../../apps/proxy/."
 docker push "${DOCKERHUB_NAME}/${proxy[imageName]}"
+
+# persistence
+docker build \
+  --tag "${DOCKERHUB_NAME}/${persistence[imageName]}" \
+  "../../apps/persistence/."
+docker push "${DOCKERHUB_NAME}/${persistence[imageName]}"
 
 ###################
 ### Deploy Helm ###
@@ -125,7 +138,7 @@ helm upgrade ${proxy[name]} \
   --wait \
   --debug \
   --create-namespace \
-  --set namespace=${proxy[namespace]} \
+  --namespace=${proxy[namespace]} \
   --set dockerhubName=$DOCKERHUB_NAME \
   --set imageName=${proxy[imageName]} \
   --set imagePullPolicy="Always" \
@@ -134,3 +147,19 @@ helm upgrade ${proxy[name]} \
   --set port=${proxy[port]} \
   --set endpoint="http://${otelcollector[name]}-collector.${otelcollector[namespace]}.svc.cluster.local:4317" \
   "../helm/proxy"
+
+# persistence
+helm upgrade ${persistence[name]} \
+  --install \
+  --wait \
+  --debug \
+  --create-namespace \
+  --namespace=${persistence[namespace]} \
+  --set dockerhubName=$DOCKERHUB_NAME \
+  --set imageName=${persistence[imageName]} \
+  --set imagePullPolicy="Always" \
+  --set name=${persistence[name]} \
+  --set replicas=${persistence[replicas]} \
+  --set port=${persistence[port]} \
+  --set endpoint="http://${otelcollector[name]}-collector.${otelcollector[namespace]}.svc.cluster.local:4317" \
+  "../helm/persistence"
