@@ -1,0 +1,13 @@
+### Variables
+
+# Name
+name: "otel-collector"
+
+# Mode
+mode: "daemonset"
+
+# New Relic OTLP endpoint
+newrelicOtlpEndpoint: "otlp.nr-data.net:4317"
+
+# New Relic license key
+newrelicLicenseKey: ""

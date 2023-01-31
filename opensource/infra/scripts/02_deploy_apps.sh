@@ -16,6 +16,12 @@ declare -A oteloperator
 oteloperator["name"]="otel-operator"
 oteloperator["namespace"]="monitoring"
 
+# otel-collector
+declare -A otelcollector
+otelcollector["name"]="otel-collector"
+otelcollector["namespace"]="monitoring"
+otelcollector["mode"]="daemonset"
+
 # proxy
 declare -A proxy
 proxy["name"]="proxy"
@@ -29,11 +35,11 @@ proxy["port"]=8080
 ### Build & Push ###
 ####################
 
-# # proxy
-# docker build \
-#   --tag "${DOCKERHUB_NAME}/${proxy[imageName]}" \
-#   "../../apps/proxy/."
-# docker push "${DOCKERHUB_NAME}/${proxy[imageName]}"
+# proxy
+docker build \
+  --tag "${DOCKERHUB_NAME}/${proxy[imageName]}" \
+  "../../apps/proxy/."
+docker push "${DOCKERHUB_NAME}/${proxy[imageName]}"
 
 ###################
 ### Deploy Helm ###
@@ -64,18 +70,31 @@ helm upgrade ${oteloperator[name]} \
   --namespace ${oteloperator[namespace]} \
   "open-telemetry/opentelemetry-operator"
 
-# # proxy
-# helm upgrade ${proxy[name]} \
-#   --install \
-#   --wait \
-#   --debug \
-#   --create-namespace \
-#   --set dockerhubName=$DOCKERHUB_NAME \
-#   --set imageName=${proxy[imageName]} \
-#   --set name=${proxy[name]} \
-#   --set namespace=${proxy[namespace]} \
-#   --set replicas=${proxy[replicas]} \
-#   --set port=${proxy[port]} \
-#   --set otelServiceName=${proxy[name]} \
-#   --set otelExporterOtlpEndpoint=${otelcollector[grpcEndpoint]} \
-#   "../helm/proxy"
+# otel-collector
+helm upgrade ${otelcollector[name]} \
+  --install \
+  --wait \
+  --debug \
+  --create-namespace \
+  --namespace ${otelcollector[namespace]} \
+  --set name=${otelcollector[name]} \
+  --set mode=${otelcollector[mode]} \
+  --set newrelicOtlpEndpoint="otlp.eu01.nr-data.net:4317" \
+  --set newrelicLicenseKey=$NEWRELIC_LICENSE_KEY \
+  "../helm/otelcollector"
+
+# proxy
+helm upgrade ${proxy[name]} \
+  --install \
+  --wait \
+  --debug \
+  --create-namespace \
+  --set dockerhubName=$DOCKERHUB_NAME \
+  --set imageName=${proxy[imageName]} \
+  --set name=${proxy[name]} \
+  --set namespace=${proxy[namespace]} \
+  --set replicas=${proxy[replicas]} \
+  --set port=${proxy[port]} \
+  --set otelServiceName=${proxy[name]} \
+  --set otelExporterOtlpEndpoint=${otelcollector[grpcEndpoint]} \
+  "../helm/proxy"

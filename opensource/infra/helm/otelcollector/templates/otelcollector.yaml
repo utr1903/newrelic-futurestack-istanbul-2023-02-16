@@ -1,0 +1,31 @@
+apiVersion: opentelemetry.io/v1alpha1
+kind: OpenTelemetryCollector
+metadata:
+  name: {{ .Values.name }}
+spec:
+  mode: {{ .Values.mode }}
+  config: |
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+          http:
+
+    processors:
+
+    exporters:
+      logging:
+        loglevel: debug
+      otlp:
+        endpoint: {{ .Values.newrelicOtlpEndpoint }}
+        tls:
+          insecure: false
+        headers:
+          api-key: {{ .Values.newrelicLicenseKey }}
+
+    service:
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: []
+          exporters: [logging, otlp]
