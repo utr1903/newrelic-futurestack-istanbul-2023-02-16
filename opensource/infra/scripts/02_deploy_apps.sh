@@ -5,6 +5,7 @@
 #####################
 
 repoName="futurestack-istanbul"
+clusterName="mytestcluster"
 
 # cert-manager
 declare -A certmanager
@@ -21,6 +22,11 @@ declare -A otelcollector
 otelcollector["name"]="otel-collector"
 otelcollector["namespace"]="monitoring"
 otelcollector["mode"]="daemonset"
+
+# prometheus
+declare -A prometheus
+prometheus["name"]="prometheus"
+prometheus["namespace"]="monitoring"
 
 # proxy
 declare -A proxy
@@ -48,6 +54,7 @@ docker push "${DOCKERHUB_NAME}/${proxy[imageName]}"
 # Add helm repos
 helm repo add jetstack https://charts.jetstack.io
 helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
+helm repo add newrelic-prometheus https://newrelic.github.io/newrelic-prometheus-configurator
 helm repo update
 
 # cert-manager
@@ -82,6 +89,18 @@ helm upgrade ${otelcollector[name]} \
   --set newrelicOtlpEndpoint="otlp.eu01.nr-data.net:4317" \
   --set newrelicLicenseKey=$NEWRELIC_LICENSE_KEY \
   "../helm/otelcollector"
+
+# prometheus
+helm upgrade ${prometheus[name]} \
+  --install \
+  --wait \
+  --debug \
+  --create-namespace \
+  --namespace ${prometheus[namespace]} \
+  --set cluster=$clusterName \
+  --set licenseKey=$NEWRELIC_LICENSE_KEY \
+  -f "../helm/prometheus/values.yaml" \
+  "newrelic-prometheus/newrelic-prometheus-agent"
 
 # proxy
 helm upgrade ${proxy[name]} \

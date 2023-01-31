@@ -12,6 +12,7 @@ spec:
           http:
 
     processors:
+      batch:
 
     exporters:
       logging:
@@ -27,5 +28,9 @@ spec:
       pipelines:
         traces:
           receivers: [otlp]
-          processors: []
+          processors: [batch]
+          exporters: [logging, otlp]
+        metrics:
+          receivers: [otlp]
+          processors: [batch]
           exporters: [logging, otlp]
