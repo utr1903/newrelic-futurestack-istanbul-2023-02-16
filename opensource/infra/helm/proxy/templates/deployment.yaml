@@ -11,11 +11,13 @@ spec:
     metadata:
       labels:
         app: {{ .Values.name }}
+      annotations:
+        instrumentation.opentelemetry.io/inject-java: {{ .Values.name }}
     spec:
       containers:
         - name: {{ .Values.name }}
           image: "{{ .Values.dockerhubName }}/{{ .Values.imageName }}"
-          imagePullPolicy: Always
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
           ports:
             - protocol: TCP
               containerPort: {{ .Values.port }}

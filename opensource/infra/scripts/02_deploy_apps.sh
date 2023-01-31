@@ -89,12 +89,12 @@ helm upgrade ${proxy[name]} \
   --wait \
   --debug \
   --create-namespace \
+  --set namespace=${proxy[namespace]} \
   --set dockerhubName=$DOCKERHUB_NAME \
   --set imageName=${proxy[imageName]} \
+  --set imagePullPolicy="Always" \
   --set name=${proxy[name]} \
-  --set namespace=${proxy[namespace]} \
   --set replicas=${proxy[replicas]} \
   --set port=${proxy[port]} \
-  --set otelServiceName=${proxy[name]} \
-  --set otelExporterOtlpEndpoint=${otelcollector[grpcEndpoint]} \
+  --set endpoint="http://${otelcollector[name]}-collector.${otelcollector[namespace]}.svc.cluster.local:4317" \
   "../helm/proxy"

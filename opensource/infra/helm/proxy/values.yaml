@@ -1,3 +1,13 @@
+### Variables
+
+# Name
 name: proxy
+
+# Port
 port: 8080
+
+# Replicas
 replicas: 1
+
+# Endpoint
+endpoint: "otel-collector-collector.monitoring.svc.cluster.local:4317"
