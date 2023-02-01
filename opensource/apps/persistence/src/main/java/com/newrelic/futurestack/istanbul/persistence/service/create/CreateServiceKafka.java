@@ -10,7 +10,7 @@ public class CreateServiceKafka {
 
   private final Logger logger = LoggerFactory.getLogger(CreateServiceKafka.class);
 
-  @KafkaListener(topics = "create", groupId = "persistence-oss")
+  @KafkaListener(topics = "#{'${KAFKA_TOPIC}'}", groupId = "#{'${KAFKA_CONSUMER_GROUP_ID}'}")
   public void createPipelineData(
       String message) {
     logger.info(message);
