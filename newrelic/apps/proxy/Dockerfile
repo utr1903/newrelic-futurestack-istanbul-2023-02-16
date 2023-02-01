@@ -5,7 +5,7 @@ RUN apt-get update \
   && apt-get install -y wget
 
 RUN mkdir /agent
-RUN wget -O /agent/newrelic.jar https://download.newrelic.com/newrelic/java-agent/newrelic-agent/7.11.0/newrelic-agent-7.11.0.jar
+RUN wget -O /agent/newrelic.jar https://download.newrelic.com/newrelic/java-agent/newrelic-agent/8.0.0/newrelic-agent-8.0.0.jar
 
 # Build
 FROM maven:3.6.0-jdk-11-slim AS build
