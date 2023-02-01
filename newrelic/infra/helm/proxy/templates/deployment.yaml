@@ -18,6 +18,10 @@ spec:
           image: "{{ .Values.dockerhubName }}/{{ .Values.imageName }}"
           imagePullPolicy: {{ .Values.imagePullPolicy }}
           env:
+            - name: KAFKA_BOOTSTRAP_SERVER_ADDRESS
+              value: {{ .Values.kafka.address }}
+            - name: KAFKA_TOPIC
+              value: {{ .Values.kafka.topic }}
             - name: NEW_RELIC_APP_NAME
               value: {{ .Values.newrelic.appName }}
             - name: NEW_RELIC_LICENSE_KEY
