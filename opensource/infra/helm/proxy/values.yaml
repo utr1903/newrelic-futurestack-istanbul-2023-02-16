@@ -18,6 +18,11 @@ resources:
     # Memory
     memory: 1000Mi
 
+# Kafka
+kafka:
+  address: "kafka-0.kafka-headless.apps.svc.cluster.local:9092"
+  topic: "create"
+
 # Endpoints
 endpoints:
   # OTel collector
