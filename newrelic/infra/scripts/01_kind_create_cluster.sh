@@ -5,6 +5,6 @@
 ###################
 
 kind create cluster \
-  --name test \
+  --name futurestack-nr \
   --config ./helpers/kind-config.yaml
   # --image=kindest/node:v1.24.0
