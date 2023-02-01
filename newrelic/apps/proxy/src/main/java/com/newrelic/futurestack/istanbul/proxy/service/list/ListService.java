@@ -6,6 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -23,6 +24,9 @@ public class ListService {
 
   private final Logger logger = LoggerFactory.getLogger(ListService.class);
 
+  @Value(value = "${PERSISTENCE_SERVICE_ENDPOINT}")
+  private String persistenceServiceEndpoint;
+  
   @Autowired
   private RestTemplate restTemplate;
 
@@ -38,7 +42,7 @@ public class ListService {
   private ResponseEntity<ResponseBase<List<PipelineData>>> makeRequestToPersistenceService(
       String error) {
 
-    var url = System.getenv("PERSISTENCE_SERVICE_ENDPOINT") + "/list";
+    var url = persistenceServiceEndpoint + "/list";
     if (!error.isEmpty())
       url += "?error=" + error;
 
