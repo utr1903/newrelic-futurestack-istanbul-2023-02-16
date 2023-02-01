@@ -43,7 +43,6 @@ public class ListService {
       String error) {
 
     var url = System.getenv("PERSISTENCE_SERVICE_ENDPOINT") + "/list";
-    logger.info(url);
     if (!error.isEmpty())
       url += "?error=" + error;
 

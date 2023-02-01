@@ -30,22 +30,12 @@ public class ProxyController {
 	@Autowired
 	private DeleteService deleteService;
 
-	@GetMapping("ping")
-	public ResponseEntity<String> ping() {
-		logger.info("PONG");
-		var response = new ResponseEntity<>("pong", HttpStatus.OK);
-		return response;
-	}
-
 	@GetMapping("list")
 	public ResponseEntity<ResponseBase<List<PipelineData>>> list(
 			@RequestParam(name = "error", defaultValue = "", required = false) String error) {
 		logger.info("List method is triggered...");
-		logger.info(error);
 
 		var response = listService.run(error);
-		logger.info(Integer.toString(response.getStatusCodeValue()));
-		logger.info(response.getBody().getMessage());
 
 		logger.info("List method is executed.");
 
