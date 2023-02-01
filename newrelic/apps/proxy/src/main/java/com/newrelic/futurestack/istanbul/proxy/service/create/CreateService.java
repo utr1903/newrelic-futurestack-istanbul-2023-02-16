@@ -10,6 +10,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
+import com.newrelic.api.agent.Trace;
 import com.newrelic.futurestack.istanbul.proxy.dtos.ResponseBase;
 import com.newrelic.futurestack.istanbul.proxy.service.create.dtos.CreateRequestDto;
 
@@ -34,6 +35,7 @@ public class CreateService {
     return response;
   }
 
+  @Trace(dispatcher = true)
   private ResponseEntity<ResponseBase<Boolean>> publishToKafka(
       CreateRequestDto requestDto) {
 
