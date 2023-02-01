@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.newrelic.futurestack.istanbul.persistence.dtos.ResponseBase;
-import com.newrelic.futurestack.istanbul.persistence.service.post.CreateService;
-import com.newrelic.futurestack.istanbul.persistence.service.post.dtos.CreateRequestDto;
+import com.newrelic.futurestack.istanbul.persistence.service.create.CreateService;
+import com.newrelic.futurestack.istanbul.persistence.service.create.dtos.CreateRequestDto;
 
 import io.opentelemetry.instrumentation.annotations.WithSpan;
 

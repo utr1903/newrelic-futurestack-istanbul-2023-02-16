@@ -1,4 +1,4 @@
-package com.newrelic.futurestack.istanbul.persistence.service.post.dtos;
+package com.newrelic.futurestack.istanbul.persistence.service.create.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
