@@ -1,0 +1,24 @@
+### Variables
+
+# Name
+name: proxy-nr
+
+# Port
+port: 8080
+
+# Replicas
+replicas: 1
+
+# Resources
+resources:
+  # Limits
+  limits:
+    # CPU
+    cpu: 800m
+    # Memory
+    memory: 1000Mi
+
+# Endpoints
+endpoints:
+  # Persistence service
+  persistence: "http://persistence-nr.apps.svc.cluster.local:8080/persistence"
