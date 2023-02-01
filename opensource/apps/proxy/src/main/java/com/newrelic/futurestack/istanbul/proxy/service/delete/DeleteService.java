@@ -5,6 +5,7 @@ import java.util.Collections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -23,6 +24,9 @@ public class DeleteService {
 
   private final Logger logger = LoggerFactory.getLogger(DeleteService.class);
 
+  @Value(value = "${PERSISTENCE_SERVICE_ENDPOINT}")
+  private String persistenceServiceEndpoint;
+
   @Autowired
   private RestTemplate restTemplate;
 
@@ -40,7 +44,7 @@ public class DeleteService {
   private ResponseEntity<ResponseBase<Boolean>> makeRequestToPersistenceService(
       String error) {
 
-    var url = System.getenv("PERSISTENCE_SERVICE_ENDPOINT") + "/delete";
+    var url = persistenceServiceEndpoint + "/delete";
     if (!error.isEmpty())
       url += "?error=" + error;
 
