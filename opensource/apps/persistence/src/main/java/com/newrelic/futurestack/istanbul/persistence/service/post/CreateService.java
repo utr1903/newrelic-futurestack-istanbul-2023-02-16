@@ -38,7 +38,7 @@ public class CreateService {
 
       // Create success response
       String message = "Pipeline data is stored successfully.";
-      return createResponse(message, true, HttpStatus.BAD_REQUEST);
+      return createResponse(message, true, HttpStatus.OK);
     } catch (Exception e) {
 
       // Create fail response
