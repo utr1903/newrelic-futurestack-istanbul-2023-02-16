@@ -1,3 +1,12 @@
+# Download agent
+FROM ubuntu:latest AS agent
+
+RUN apt-get update \
+  && apt-get install -y wget
+
+RUN mkdir /agent
+RUN wget -O /agent/newrelic.jar https://download.newrelic.com/newrelic/java-agent/newrelic-agent/7.11.0/newrelic-agent-7.11.0.jar
+
 # Build
 FROM maven:3.6.0-jdk-11-slim AS build
 COPY src /home/app/src
@@ -8,6 +17,9 @@ RUN mvn -f /home/app/pom.xml clean package
 FROM openjdk:11-jre-slim
 COPY --from=build /home/app/target/persistence-0.0.1-SNAPSHOT.jar /usr/local/lib/app.jar
 
+ADD newrelic/newrelic.yml /usr/local/lib
+COPY --from=agent /agent/newrelic.jar /usr/local/lib/newrelic.jar
+
 EXPOSE 8080
 
-ENTRYPOINT ["java","-jar","/usr/local/lib/app.jar"]
+ENTRYPOINT ["java","-javaagent:/usr/local/lib/newrelic.jar","-jar","/usr/local/lib/app.jar"]

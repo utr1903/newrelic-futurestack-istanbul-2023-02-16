@@ -75,6 +75,8 @@ helm upgrade ${proxy[name]} \
   --set name=${proxy[name]} \
   --set replicas=${proxy[replicas]} \
   --set port=${proxy[port]} \
+  --set newrelic.appName=${proxy[name]} \
+  --set newrelic.licenseKey=$NEWRELIC_LICENSE_KEY \
   --set endpoints.persistence="http://${persistence[name]}.${persistence[namespace]}.svc.cluster.local:${persistence[port]}/persistence" \
   "../helm/proxy"
 
@@ -91,6 +93,8 @@ helm upgrade ${persistence[name]} \
   --set name=${persistence[name]} \
   --set replicas=${persistence[replicas]} \
   --set port=${persistence[port]} \
+  --set newrelic.appName=${persistence[name]} \
+  --set newrelic.licenseKey=$NEWRELIC_LICENSE_KEY \
   --set mysql.server="${mysql[name]}.${mysql[namespace]}.svc.cluster.local" \
   --set mysql.username=${mysql[username]} \
   --set mysql.password=${mysql[password]} \

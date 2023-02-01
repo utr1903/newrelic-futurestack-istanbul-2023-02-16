@@ -18,6 +18,10 @@ spec:
           image: "{{ .Values.dockerhubName }}/{{ .Values.imageName }}"
           imagePullPolicy: {{ .Values.imagePullPolicy }}
           env:
+            - name: NEW_RELIC_APP_NAME
+              value: {{ .Values.newrelic.appName }}
+            - name: NEW_RELIC_LICENSE_KEY
+              value: {{ .Values.newrelic.licenseKey }}
             - name: PERSISTENCE_SERVICE_ENDPOINT
               value: {{ .Values.endpoints.persistence }}
           ports:
