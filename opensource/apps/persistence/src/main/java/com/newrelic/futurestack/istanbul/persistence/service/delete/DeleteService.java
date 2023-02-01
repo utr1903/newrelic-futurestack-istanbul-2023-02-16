@@ -29,7 +29,7 @@ public class DeleteService {
 
     try {
       // Generate error if given
-      errorService.causeError(error);
+      causeError(error);
 
       // Delete data
       deletePipelineDatas();

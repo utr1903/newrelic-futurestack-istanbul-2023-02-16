@@ -5,7 +5,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   exporter:
-    endpoint: {{ .Values.endpoint }}
+    endpoint: {{ .Values.endpoints.otelcollector }}
   propagators:
     - tracecontext
     - baggage

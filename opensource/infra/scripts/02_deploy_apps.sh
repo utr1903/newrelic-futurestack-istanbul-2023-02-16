@@ -166,7 +166,8 @@ helm upgrade ${proxy[name]} \
   --set name=${proxy[name]} \
   --set replicas=${proxy[replicas]} \
   --set port=${proxy[port]} \
-  --set endpoint="http://${otelcollector[name]}-collector.${otelcollector[namespace]}.svc.cluster.local:4317" \
+  --set endpoints.otelcollector="http://${otelcollector[name]}-collector.${otelcollector[namespace]}.svc.cluster.local:4317" \
+  --set endpoints.persistence="http://${persistence[name]}.${persistence[namespace]}.svc.cluster.local:${persistence[port]}/persistence" \
   "../helm/proxy"
 
 # persistence
@@ -182,7 +183,7 @@ helm upgrade ${persistence[name]} \
   --set name=${persistence[name]} \
   --set replicas=${persistence[replicas]} \
   --set port=${persistence[port]} \
-  --set endpoint="http://${otelcollector[name]}-collector.${otelcollector[namespace]}.svc.cluster.local:4317" \
+  --set endpoints.otelcollector="http://${otelcollector[name]}-collector.${otelcollector[namespace]}.svc.cluster.local:4317" \
   --set mysql.server="${mysql[name]}.${mysql[namespace]}.svc.cluster.local" \
   --set mysql.username=${mysql[username]} \
   --set mysql.password=${mysql[password]} \

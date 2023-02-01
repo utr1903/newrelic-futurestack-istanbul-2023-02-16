@@ -18,8 +18,10 @@ resources:
     # Memory
     memory: 1000Mi
 
-# Endpoint
-endpoint: "otel-collector-collector.monitoring.svc.cluster.local:4317"
+# Endpoints
+endpoints:
+  # OTel collector
+  otelcollector: "http://otel-collector-collector.monitoring.svc.cluster.local:4317"
 
 # MySQL
 mysql:

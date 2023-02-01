@@ -18,5 +18,9 @@ resources:
     # Memory
     memory: 1000Mi
 
-# Endpoint
-endpoint: "otel-collector-collector.monitoring.svc.cluster.local:4317"
+# Endpoints
+endpoints:
+  # OTel collector
+  otelcollector: "http://otel-collector-collector.monitoring.svc.cluster.local:4317"
+  # Persistence service
+  persistence: "http://persistence-oss.apps.svc.cluster.local:8080/persistence"
