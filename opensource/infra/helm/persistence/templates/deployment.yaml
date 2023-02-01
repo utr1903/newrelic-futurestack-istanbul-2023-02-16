@@ -19,6 +19,19 @@ spec:
         - name: {{ .Values.name }}
           image: "{{ .Values.dockerhubName }}/{{ .Values.imageName }}"
           imagePullPolicy: {{ .Values.imagePullPolicy }}
+          env:
+            - name: APP_NAME
+              value: {{ .Values.name }}
+            - name: MYSQL_SERVER
+              value: {{ .Values.mysql.server }}
+            - name: MYSQL_USERNAME
+              value: {{ .Values.mysql.username }}
+            - name: MYSQL_PASSWORD
+              value: {{ .Values.mysql.password }}
+            - name: MYSQL_PORT
+              value: "{{ .Values.mysql.port }}"
+            - name: MYSQL_DATABASE
+              value: {{ .Values.mysql.database }}
           ports:
             - protocol: TCP
               containerPort: {{ .Values.port }}

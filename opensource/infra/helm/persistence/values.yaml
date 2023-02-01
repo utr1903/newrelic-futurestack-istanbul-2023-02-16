@@ -11,3 +11,15 @@ replicas: 1
 
 # Endpoint
 endpoint: "otel-collector-collector.monitoring.svc.cluster.local:4317"
+
+# MySQL
+mysql:
+  server: ""
+  # Username
+  username: "root"
+  # Password
+  password: ""
+  # Port
+  port: 3306
+  # Database
+  database: ""

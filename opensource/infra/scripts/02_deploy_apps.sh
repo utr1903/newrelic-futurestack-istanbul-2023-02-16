@@ -33,6 +33,15 @@ declare -A prometheus
 prometheus["name"]="prometheus"
 prometheus["namespace"]="monitoring"
 
+# mysql
+declare -A mysql
+mysql["name"]="mysql"
+mysql["namespace"]="apps"
+mysql["username"]="root"
+mysql["password"]="verysecretpassword"
+mysql["port"]=3306
+mysql["database"]="futurestack"
+
 # proxy
 declare -A proxy
 proxy["name"]="proxy-oss"
@@ -74,6 +83,7 @@ helm repo add jetstack https://charts.jetstack.io
 helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
 helm repo add newrelic-prometheus https://newrelic.github.io/newrelic-prometheus-configurator
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 
 # cert-manager
@@ -132,6 +142,17 @@ helm upgrade ${prometheus[name]} \
   -f "../helm/prometheus/values.yaml" \
   "newrelic-prometheus/newrelic-prometheus-agent"
 
+# mysql
+helm upgrade ${mysql[name]} \
+  --install \
+  --wait \
+  --debug \
+  --create-namespace \
+  --namespace=${mysql[namespace]} \
+  --set auth.rootPassword=${mysql[password]} \
+  --set auth.database=${mysql[database]} \
+    "bitnami/mysql"
+
 # proxy
 helm upgrade ${proxy[name]} \
   --install \
@@ -162,4 +183,9 @@ helm upgrade ${persistence[name]} \
   --set replicas=${persistence[replicas]} \
   --set port=${persistence[port]} \
   --set endpoint="http://${otelcollector[name]}-collector.${otelcollector[namespace]}.svc.cluster.local:4317" \
+  --set mysql.server="${mysql[name]}.${mysql[namespace]}.svc.cluster.local" \
+  --set mysql.username=${mysql[username]} \
+  --set mysql.password=${mysql[password]} \
+  --set mysql.port=${mysql[port]} \
+  --set mysql.database=${mysql[database]} \
   "../helm/persistence"
