@@ -6,6 +6,11 @@
 
 repoName="futurestack-istanbul"
 
+# kafka
+declare -A kafka
+kafka["name"]="kafka"
+kafka["namespace"]="apps"
+
 # mysql
 declare -A mysql
 mysql["name"]="mysql"
@@ -51,6 +56,19 @@ docker push "${DOCKERHUB_NAME}/${persistence[imageName]}"
 ### Deploy Helm ###
 ###################
 
+# Add helm repos
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+
+# kafka
+helm upgrade ${kafka[name]} \
+  --install \
+  --wait \
+  --debug \
+  --create-namespace \
+  --namespace=${kafka[namespace]} \
+  "bitnami/kafka"
+
 # mysql
 helm upgrade ${mysql[name]} \
   --install \
@@ -75,6 +93,8 @@ helm upgrade ${proxy[name]} \
   --set name=${proxy[name]} \
   --set replicas=${proxy[replicas]} \
   --set port=${proxy[port]} \
+  --set kafka.address="${kafka[name]}-0.${kafka[name]}-headless.${kafka[namespace]}.svc.cluster.local:9092" \
+  --set kafka.topic="create" \
   --set newrelic.appName=${proxy[name]} \
   --set newrelic.licenseKey=$NEWRELIC_LICENSE_KEY \
   --set endpoints.persistence="http://${persistence[name]}.${persistence[namespace]}.svc.cluster.local:${persistence[port]}/persistence" \
@@ -93,6 +113,9 @@ helm upgrade ${persistence[name]} \
   --set name=${persistence[name]} \
   --set replicas=${persistence[replicas]} \
   --set port=${persistence[port]} \
+  --set kafka.address="${kafka[name]}.${kafka[namespace]}.svc.cluster.local:9092" \
+  --set kafka.topic="create" \
+  --set kafka.groupId=${persistence[name]} \
   --set newrelic.appName=${persistence[name]} \
   --set newrelic.licenseKey=$NEWRELIC_LICENSE_KEY \
   --set mysql.server="${mysql[name]}.${mysql[namespace]}.svc.cluster.local" \
