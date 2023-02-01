@@ -1,7 +1,7 @@
 ### Variables
 
 # Name
-name: proxy
+name: proxy-oss
 
 # Port
 port: 8080
