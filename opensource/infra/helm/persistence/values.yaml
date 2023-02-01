@@ -20,8 +20,11 @@ resources:
 
 # Kafka
 kafka:
+  # Address
   address: "kafka.apps.svc.cluster.local:9092"
+  # Topic
   topic: "create"
+  # Consumer group ID
   groupId: "persistence"
 
 # Endpoints
@@ -31,6 +34,7 @@ endpoints:
 
 # MySQL
 mysql:
+  # Server path
   server: ""
   # Username
   username: "root"
@@ -39,4 +43,4 @@ mysql:
   # Port
   port: 3306
   # Database
-  database: ""
+  database: "futurestack"

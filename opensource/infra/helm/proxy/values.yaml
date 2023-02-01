@@ -20,7 +20,9 @@ resources:
 
 # Kafka
 kafka:
+  # Address
   address: "kafka-0.kafka-headless.apps.svc.cluster.local:9092"
+  # Topic
   topic: "create"
 
 # Endpoints

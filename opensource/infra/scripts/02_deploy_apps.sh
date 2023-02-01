@@ -199,6 +199,9 @@ helm upgrade ${persistence[name]} \
   --set name=${persistence[name]} \
   --set replicas=${persistence[replicas]} \
   --set port=${persistence[port]} \
+  --set kafka.address="${kafka[name]}.${kafka[namespace]}.svc.cluster.local:9092" \
+  --set kafka.topic="create" \
+  --set kafka.groupId=${persistence[name]} \
   --set endpoints.otelcollector="http://${otelcollector[name]}-collector.${otelcollector[namespace]}.svc.cluster.local:4317" \
   --set mysql.server="${mysql[name]}.${mysql[namespace]}.svc.cluster.local" \
   --set mysql.username=${mysql[username]} \
