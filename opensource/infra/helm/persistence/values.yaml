@@ -9,6 +9,15 @@ port: 8080
 # Replicas
 replicas: 1
 
+# Resources
+resources:
+  # Limits
+  limits:
+    # CPU
+    cpu: 800m
+    # Memory
+    memory: 1000Mi
+
 # Endpoint
 endpoint: "otel-collector-collector.monitoring.svc.cluster.local:4317"
 

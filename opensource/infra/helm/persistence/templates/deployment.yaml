@@ -37,5 +37,5 @@ spec:
               containerPort: {{ .Values.port }}
           resources:
             limits:
-              cpu: 400m
-              memory: 1000Mi
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
