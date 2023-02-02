@@ -23,20 +23,6 @@ resource "newrelic_one_dashboard" "kubernetes_prometheus" {
       text = "## Node Overview\nTo be able to visualize every widget properly, Prometheus should be able to scrape the following resources:\n- Nodes Endpoints\n- Node Exporter\n- Kube State Metrics"
     }
 
-    # Node Capacities
-    widget_table {
-      title  = "Node Capacities"
-      row    = 2
-      column = 1
-      height = 3
-      width  = 4
-
-      nrql_query {
-        account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "FROM Metric SELECT uniqueCount(cpu) AS 'CPU (cores)', max(node_memory_MemTotal_bytes)/1024/1024/1024 AS 'MEM (GB)' WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.prometheus_server_name}' AND component = 'node-exporter' FACET node"
-      }
-    }
-
     # Node to Pod Map
     widget_table {
       title  = "Node to Pod Map"
@@ -68,7 +54,7 @@ resource "newrelic_one_dashboard" "kubernetes_prometheus" {
     # Num Pods by Nodes
     widget_line {
       title  = "Num Pods by Nodes"
-      row    = 2
+      row    = 3
       column = 9
       height = 3
       width  = 4
@@ -79,11 +65,26 @@ resource "newrelic_one_dashboard" "kubernetes_prometheus" {
       }
     }
 
+    # Node Capacities
+    widget_table {
+      title  = "Node Capacities"
+      row    = 3
+      column = 1
+      height = 3
+      width  = 4
+
+      nrql_query {
+        account_id = var.NEW_RELIC_ACCOUNT_ID
+        query      = "FROM Metric SELECT uniqueCount(cpu) AS 'CPU (cores)', max(node_memory_MemTotal_bytes)/1024/1024/1024 AS 'MEM (GB)' WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.prometheus_server_name}' AND job = 'kubernetes-service-endpoints' AND service ='prometheus-prometheus-node-exporter' FACET node"
+      }
+    }
+
     # Node CPU Usage (mcores)
     widget_area {
       title  = "Node CPU Usage (mcores)"
-      row    = 3
+      row    = 6
       column = 1
+      height = 3
       width  = 6
 
       nrql_query {
@@ -95,8 +96,9 @@ resource "newrelic_one_dashboard" "kubernetes_prometheus" {
     # Node CPU Utilization (%)
     widget_line {
       title  = "Node CPU Utilization (%)"
-      row    = 3
+      row    = 6
       column = 7
+      height = 3
       width  = 6
 
       nrql_query {
@@ -108,8 +110,9 @@ resource "newrelic_one_dashboard" "kubernetes_prometheus" {
     # Node MEM Usage (bytes)
     widget_area {
       title  = "Node MEM Usage (bytes)"
-      row    = 4
+      row    = 9
       column = 1
+      height = 3
       width  = 6
 
       nrql_query {
@@ -121,8 +124,9 @@ resource "newrelic_one_dashboard" "kubernetes_prometheus" {
     # Node MEM Utilization (%)
     widget_line {
       title  = "Node MEM Utilization (%)"
-      row    = 4
+      row    = 9
       column = 7
+      height = 3
       width  = 6
 
       nrql_query {
@@ -134,8 +138,9 @@ resource "newrelic_one_dashboard" "kubernetes_prometheus" {
     # Node STO Usage (bytes)
     widget_area {
       title  = "Node STO Usage (bytes)"
-      row    = 5
+      row    = 12
       column = 1
+      height = 3
       width  = 6
 
       nrql_query {
@@ -147,8 +152,9 @@ resource "newrelic_one_dashboard" "kubernetes_prometheus" {
     # Node STO Utilization (%)
     widget_line {
       title  = "Node STO Utilization (%)"
-      row    = 5
+      row    = 12
       column = 7
+      height = 3
       width  = 6
 
       nrql_query {
@@ -292,6 +298,7 @@ resource "newrelic_one_dashboard" "kubernetes_prometheus" {
       title  = "Container CPU Usage per Namespace (mcores)"
       row    = 5
       column = 1
+      height = 3
       width  = 6
 
       nrql_query {
@@ -305,8 +312,8 @@ resource "newrelic_one_dashboard" "kubernetes_prometheus" {
       title  = "Container CPU Utilization per Namespace (%)"
       row    = 5
       column = 7
-      width  = 6
       height = 3
+      width  = 6
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
@@ -319,8 +326,8 @@ resource "newrelic_one_dashboard" "kubernetes_prometheus" {
       title  = "Container MEM Usage per Namespace (bytes)"
       row    = 8
       column = 1
-      width  = 6
       height = 3
+      width  = 6
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
@@ -333,8 +340,8 @@ resource "newrelic_one_dashboard" "kubernetes_prometheus" {
       title  = "Container MEM Utilization per Namespace (%)"
       row    = 8
       column = 7
-      width  = 6
       height = 3
+      width  = 6
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
@@ -375,34 +382,6 @@ resource "newrelic_one_dashboard" "kubernetes_prometheus" {
       }
     }
 
-    # Container (Ready)
-    widget_billboard {
-      title  = "Container (Ready)"
-      row    = 3
-      column = 1
-      height = 2
-      width  = 2
-
-      nrql_query {
-        account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "FROM (FROM Metric SELECT latest(kube_pod_container_status_ready) AS `ready` WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.prometheus_server_name}' AND service = 'prometheus-kube-state-metrics' FACET container LIMIT MAX) SELECT sum(`ready`)"
-      }
-    }
-
-    # Container (Waiting)
-    widget_billboard {
-      title  = "Container (Waiting)"
-      row    = 3
-      column = 3
-      height = 2
-      width  = 2
-
-      nrql_query {
-        account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "FROM (FROM Metric SELECT latest(kube_pod_container_status_waiting) AS `waiting` WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.prometheus_server_name}' AND service = 'prometheus-kube-state-metrics' FACET container LIMIT MAX) SELECT sum(`waiting`)"
-      }
-    }
-
     # Pod (Running)
     widget_billboard {
       title  = "Pod (Running)"
@@ -428,6 +407,34 @@ resource "newrelic_one_dashboard" "kubernetes_prometheus" {
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
         query      = "FROM (FROM Metric SELECT latest(kube_pod_status_phase) AS `pending` WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.prometheus_server_name}' AND service = 'prometheus-kube-state-metrics' AND phase = 'Pending' FACET pod LIMIT MAX) SELECT sum(`pending`)"
+      }
+    }
+
+    # Container (Ready)
+    widget_billboard {
+      title  = "Container (Ready)"
+      row    = 3
+      column = 1
+      height = 2
+      width  = 2
+
+      nrql_query {
+        account_id = var.NEW_RELIC_ACCOUNT_ID
+        query      = "FROM (FROM Metric SELECT latest(kube_pod_container_status_ready) AS `ready` WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.prometheus_server_name}' AND service = 'prometheus-kube-state-metrics' FACET container LIMIT MAX) SELECT sum(`ready`)"
+      }
+    }
+
+    # Container (Waiting)
+    widget_billboard {
+      title  = "Container (Waiting)"
+      row    = 3
+      column = 3
+      height = 2
+      width  = 2
+
+      nrql_query {
+        account_id = var.NEW_RELIC_ACCOUNT_ID
+        query      = "FROM (FROM Metric SELECT latest(kube_pod_container_status_waiting) AS `waiting` WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.prometheus_server_name}' AND service = 'prometheus-kube-state-metrics' FACET container LIMIT MAX) SELECT sum(`waiting`)"
       }
     }
 
@@ -464,6 +471,7 @@ resource "newrelic_one_dashboard" "kubernetes_prometheus" {
       title  = "Container CPU Usage per Pod (mcores)"
       row    = 5
       column = 1
+      height = 3
       width  = 6
 
       nrql_query {
@@ -477,8 +485,8 @@ resource "newrelic_one_dashboard" "kubernetes_prometheus" {
       title  = "Container CPU Utilization per Pod (%)"
       row    = 5
       column = 7
-      width  = 6
       height = 3
+      width  = 6
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
@@ -491,8 +499,8 @@ resource "newrelic_one_dashboard" "kubernetes_prometheus" {
       title  = "Container MEM Usage per Pod (bytes)"
       row    = 8
       column = 1
-      width  = 6
       height = 3
+      width  = 6
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
@@ -505,8 +513,8 @@ resource "newrelic_one_dashboard" "kubernetes_prometheus" {
       title  = "Container MEM Utilization per Pod (%)"
       row    = 8
       column = 7
-      width  = 6
       height = 3
+      width  = 6
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
@@ -519,8 +527,8 @@ resource "newrelic_one_dashboard" "kubernetes_prometheus" {
       title  = "Container File System Read Rate per Pod (1/s)"
       row    = 11
       column = 1
-      width  = 6
       height = 3
+      width  = 6
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
@@ -533,8 +541,8 @@ resource "newrelic_one_dashboard" "kubernetes_prometheus" {
       title  = "Container File System Write Rate per Pod (1/s)"
       row    = 11
       column = 7
-      width  = 6
       height = 3
+      width  = 6
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
@@ -547,8 +555,8 @@ resource "newrelic_one_dashboard" "kubernetes_prometheus" {
       title  = "Container Network Receive Rate per Pod (MB/s)"
       row    = 14
       column = 1
-      width  = 6
       height = 3
+      width  = 6
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
@@ -561,8 +569,8 @@ resource "newrelic_one_dashboard" "kubernetes_prometheus" {
       title  = "Container Network Transmit Rate per Pod (MB/s)"
       row    = 14
       column = 7
-      width  = 6
       height = 3
+      width  = 6
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
