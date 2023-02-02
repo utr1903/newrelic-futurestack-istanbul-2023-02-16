@@ -86,7 +86,6 @@ docker push "${DOCKERHUB_NAME}/${persistence[imageName]}"
 # Add helm repos
 helm repo add jetstack https://charts.jetstack.io
 helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
-helm repo add newrelic-prometheus https://newrelic.github.io/newrelic-prometheus-configurator
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
@@ -124,17 +123,6 @@ helm upgrade ${otelcollector[name]} \
   --set newrelicLicenseKey=$NEWRELIC_LICENSE_KEY \
   "../helm/otelcollector"
 
-# node-exporter
-helm upgrade ${nodeexporter[name]} \
-  --install \
-  --wait \
-  --debug \
-  --create-namespace \
-  --namespace ${nodeexporter[namespace]} \
-  --set tolerations[0].effect="NoSchedule" \
-  --set tolerations[0].operator="Exists" \
-  "prometheus-community/prometheus-node-exporter"
-
 # prometheus
 helm upgrade ${prometheus[name]} \
   --install \
@@ -142,10 +130,15 @@ helm upgrade ${prometheus[name]} \
   --debug \
   --create-namespace \
   --namespace ${prometheus[namespace]} \
-  --set cluster=$clusterName \
-  --set licenseKey=$NEWRELIC_LICENSE_KEY \
-  -f "../helm/prometheus/values.yaml" \
-  "newrelic-prometheus/newrelic-prometheus-agent"
+  --set alertmanager.enabled=false \
+  --set prometheus-pushgateway.enabled=false \
+  --set kubeStateMetrics.enabled=true \
+  --set nodeExporter.enabled=true \
+  --set nodeExporter.tolerations[0].effect="NoSchedule" \
+  --set nodeExporter.tolerations[0].operator="Exists" \
+  --set server.remoteWrite[0].url="https://metric-api.eu.newrelic.com/prometheus/v1/write?prometheus_server=${clusterName}" \
+  --set server.remoteWrite[0].bearer_token=$NEWRELIC_LICENSE_KEY \
+  "prometheus-community/prometheus"
 
 # kafka
 helm upgrade ${kafka[name]} \
