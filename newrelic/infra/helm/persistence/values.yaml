@@ -18,6 +18,15 @@ resources:
     # Memory
     memory: 1000Mi
 
+# Kafka
+kafka:
+  # Address
+  address: "kafka.apps.svc.cluster.local:9092"
+  # Topic
+  topic: "create"
+  # Consumer group ID
+  groupId: "persistence"
+
 # New Relic
 newrelic:
   # Application name
