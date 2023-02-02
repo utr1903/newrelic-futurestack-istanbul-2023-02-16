@@ -4,7 +4,7 @@
 
 # Infrastructure
 resource "newrelic_one_dashboard" "infra" {
-  name = "Future Stack - Infrastructure Monitoring"
+  name = "Future Stack - OSS - Infrastructure Monitoring"
 
   #####################
   ### NODE OVERVIEW ###
