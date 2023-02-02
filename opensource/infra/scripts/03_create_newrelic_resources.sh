@@ -32,7 +32,7 @@ if [[ $flagDestroy != "true" ]]; then
     -var NEW_RELIC_ACCOUNT_ID=$NEWRELIC_ACCOUNT_ID \
     -var NEW_RELIC_API_KEY=$NEWRELIC_API_KEY \
     -var NEW_RELIC_REGION=$NEWRELIC_REGION \
-    -var prometheus_server_name=$clusterName \
+    -var cluster_name=$clusterName \
     -out "./tfplan"
 
   # Apply Terraform
@@ -46,5 +46,5 @@ else
   -var NEW_RELIC_ACCOUNT_ID=$NEWRELIC_ACCOUNT_ID \
   -var NEW_RELIC_API_KEY=$NEWRELIC_API_KEY \
   -var NEW_RELIC_REGION=$NEWRELIC_REGION \
-  -var prometheus_server_name=$clusterName
+  -var cluster_name=$clusterName
 fi

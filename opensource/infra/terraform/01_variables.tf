@@ -2,25 +2,23 @@
 ### Variables ###
 #################
 
-### General ###
-
-# New Relic Account ID
+# New Relic account ID
 variable "NEW_RELIC_ACCOUNT_ID" {
   type = string
 }
 
-# New Relic API Key
+# New Relic API key
 variable "NEW_RELIC_API_KEY" {
   type = string
 }
 
-# New Relic Region
+# New Relic region
 variable "NEW_RELIC_REGION" {
   type = string
 }
 ######
 
-# Prometheus Server Name
-variable "prometheus_server_name" {
+# Cluster name
+variable "cluster_name" {
   type = string
 }
