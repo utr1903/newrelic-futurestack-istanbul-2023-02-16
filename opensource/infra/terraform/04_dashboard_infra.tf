@@ -2,9 +2,9 @@
 ### Dashboards ###
 ##################
 
-# Raw dashboard - Kubernetes Prometheus
-resource "newrelic_one_dashboard" "kubernetes_prometheus" {
-  name = "Kubernetes Monitoring with Prometheus"
+# Infrastructure
+resource "newrelic_one_dashboard" "infra" {
+  name = "Future Stack - Infrastructure Monitoring"
 
   #####################
   ### NODE OVERVIEW ###
