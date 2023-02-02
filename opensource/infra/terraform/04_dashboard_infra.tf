@@ -205,7 +205,7 @@ resource "newrelic_one_dashboard" "infra" {
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "FROM Metric SELECT uniqueCount(deployment) OR 0 WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND service = 'prometheus-kube-state-metrics' FACET namespace"
+        query      = "FROM Metric SELECT uniqueCount(deployment) OR 0 WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND service = 'prometheus-kube-state-metrics' AND namespace IN ({{namespaces}}) FACET namespace"
       }
     }
 
@@ -219,7 +219,7 @@ resource "newrelic_one_dashboard" "infra" {
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "FROM Metric SELECT uniqueCount(daemonset) OR 0 WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND service = 'prometheus-kube-state-metrics' FACET namespace"
+        query      = "FROM Metric SELECT uniqueCount(daemonset) OR 0 WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND service = 'prometheus-kube-state-metrics' AND namespace IN ({{namespaces}}) FACET namespace"
       }
     }
 
@@ -233,7 +233,7 @@ resource "newrelic_one_dashboard" "infra" {
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "FROM Metric SELECT uniqueCount(statefulset) OR 0 WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND service = 'prometheus-kube-state-metrics' FACET namespace"
+        query      = "FROM Metric SELECT uniqueCount(statefulset) OR 0 WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND service = 'prometheus-kube-state-metrics' AND namespace IN ({{namespaces}}) FACET namespace"
       }
     }
 
@@ -247,7 +247,7 @@ resource "newrelic_one_dashboard" "infra" {
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "FROM (FROM Metric SELECT latest(kube_pod_status_phase) AS `running` WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND service = 'prometheus-kube-state-metrics' AND phase = 'Running' FACET namespace, pod LIMIT MAX) SELECT sum(`running`) FACET namespace"
+        query      = "FROM (FROM Metric SELECT latest(kube_pod_status_phase) AS `running` WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND service = 'prometheus-kube-state-metrics' AND phase = 'Running' AND namespace IN ({{namespaces}}) FACET namespace, pod LIMIT MAX) SELECT sum(`running`) FACET namespace"
       }
     }
 
@@ -261,7 +261,7 @@ resource "newrelic_one_dashboard" "infra" {
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "FROM (FROM Metric SELECT latest(kube_pod_status_phase) AS `pending` WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND service = 'prometheus-kube-state-metrics' AND phase = 'Pending' FACET namespace, pod LIMIT MAX) SELECT sum(`pending`) FACET namespace"
+        query      = "FROM (FROM Metric SELECT latest(kube_pod_status_phase) AS `pending` WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND service = 'prometheus-kube-state-metrics' AND phase = 'Pending' AND namespace IN ({{namespaces}}) FACET namespace, pod LIMIT MAX) SELECT sum(`pending`) FACET namespace"
       }
     }
 
@@ -275,7 +275,7 @@ resource "newrelic_one_dashboard" "infra" {
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "FROM (FROM Metric SELECT latest(kube_pod_status_phase) AS `failed` WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND service = 'prometheus-kube-state-metrics' AND phase = 'Failed' FACET namespace, pod LIMIT MAX) SELECT sum(`failed`) FACET namespace"
+        query      = "FROM (FROM Metric SELECT latest(kube_pod_status_phase) AS `failed` WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND service = 'prometheus-kube-state-metrics' AND phase = 'Failed' AND namespace IN ({{namespaces}}) FACET namespace, pod LIMIT MAX) SELECT sum(`failed`) FACET namespace"
       }
     }
 
@@ -289,7 +289,7 @@ resource "newrelic_one_dashboard" "infra" {
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "FROM (FROM Metric SELECT latest(kube_pod_status_phase) AS `unknown` WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND service = 'prometheus-kube-state-metrics' AND phase = 'Unknown' FACET namespace, pod LIMIT MAX) SELECT sum(`unknown`) FACET namespace"
+        query      = "FROM (FROM Metric SELECT latest(kube_pod_status_phase) AS `unknown` WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND service = 'prometheus-kube-state-metrics' AND phase = 'Unknown' AND namespace IN ({{namespaces}}) FACET namespace, pod LIMIT MAX) SELECT sum(`unknown`) FACET namespace"
       }
     }
 
@@ -303,7 +303,7 @@ resource "newrelic_one_dashboard" "infra" {
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "FROM (FROM (FROM Metric SELECT rate(average(container_cpu_usage_seconds_total), 1 second)*1000 AS `usage` WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND job = 'kubernetes-nodes-cadvisor' AND container IS NOT NULL AND pod IS NOT NULL FACET namespace, pod, container TIMESERIES 5 minutes SLIDE BY 10 seconds LIMIT MAX) SELECT average(`usage`) AS `usage` FACET namespace, pod, container TIMESERIES LIMIT MAX) SELECT sum(`usage`) FACET namespace TIMESERIES AUTO"
+        query      = "FROM (FROM (FROM Metric SELECT rate(average(container_cpu_usage_seconds_total), 1 second)*1000 AS `usage` WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND job = 'kubernetes-nodes-cadvisor' AND container IS NOT NULL AND pod IS NOT NULL AND namespace IN ({{namespaces}}) FACET namespace, pod, container TIMESERIES 5 minutes SLIDE BY 10 seconds LIMIT MAX) SELECT average(`usage`) AS `usage` FACET namespace, pod, container TIMESERIES LIMIT MAX) SELECT sum(`usage`) FACET namespace TIMESERIES AUTO"
       }
     }
 
@@ -317,7 +317,7 @@ resource "newrelic_one_dashboard" "infra" {
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "FROM (FROM (FROM Metric SELECT rate(filter(average(container_cpu_usage_seconds_total), WHERE container IN (FROM Metric SELECT uniques(container) WHERE kube_pod_container_resource_limits IS NOT NULL LIMIT MAX)), 1 second) AS `usage`, filter(max(kube_pod_container_resource_limits), WHERE resource = 'cpu') AS `limit` WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND (job = 'kubernetes-nodes-cadvisor' OR service = 'prometheus-kube-state-metrics') AND container IS NOT NULL AND pod IS NOT NULL FACET namespace, pod, container TIMESERIES 5 minutes SLIDE BY 10 seconds LIMIT MAX) SELECT average(`usage`) AS `usage`, average(`limit`) AS `limit` FACET namespace, pod, container TIMESERIES AUTO LIMIT MAX) SELECT sum(`usage`)/sum(`limit`)*100 FACET namespace TIMESERIES AUTO"
+        query      = "FROM (FROM (FROM Metric SELECT rate(filter(average(container_cpu_usage_seconds_total), WHERE container IN (FROM Metric SELECT uniques(container) WHERE kube_pod_container_resource_limits IS NOT NULL LIMIT MAX)), 1 second) AS `usage`, filter(max(kube_pod_container_resource_limits), WHERE resource = 'cpu') AS `limit` WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND (job = 'kubernetes-nodes-cadvisor' OR service = 'prometheus-kube-state-metrics') AND container IS NOT NULL AND pod IS NOT NULL AND namespace IN ({{namespaces}}) FACET namespace, pod, container TIMESERIES 5 minutes SLIDE BY 10 seconds LIMIT MAX) SELECT average(`usage`) AS `usage`, average(`limit`) AS `limit` FACET namespace, pod, container TIMESERIES AUTO LIMIT MAX) SELECT sum(`usage`)/sum(`limit`)*100 FACET namespace TIMESERIES AUTO"
       }
     }
 
@@ -331,7 +331,7 @@ resource "newrelic_one_dashboard" "infra" {
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "FROM (FROM (FROM Metric SELECT average(container_memory_usage_bytes) AS `usage` WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND job = 'kubernetes-nodes-cadvisor' AND container IS NOT NULL AND pod IS NOT NULL FACET namespace, pod, container TIMESERIES 5 minutes SLIDE BY 10 seconds LIMIT MAX) SELECT average(`usage`) AS `usage` FACET namespace, pod, container TIMESERIES AUTO LIMIT MAX) SELECT sum(`usage`) FACET namespace TIMESERIES AUTO"
+        query      = "FROM (FROM (FROM Metric SELECT average(container_memory_usage_bytes) AS `usage` WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND job = 'kubernetes-nodes-cadvisor' AND container IS NOT NULL AND pod IS NOT NULL AND namespace IN ({{namespaces}}) FACET namespace, pod, container TIMESERIES 5 minutes SLIDE BY 10 seconds LIMIT MAX) SELECT average(`usage`) AS `usage` FACET namespace, pod, container TIMESERIES AUTO LIMIT MAX) SELECT sum(`usage`) FACET namespace TIMESERIES AUTO"
       }
     }
 
@@ -345,7 +345,7 @@ resource "newrelic_one_dashboard" "infra" {
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "FROM (FROM (FROM Metric SELECT filter(average(container_memory_usage_bytes), WHERE container IN (FROM Metric SELECT uniques(container) WHERE kube_pod_container_resource_limits IS NOT NULL LIMIT MAX)) AS `usage`, filter(max(kube_pod_container_resource_limits), WHERE resource = 'memory') AS `limit` WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND (job = 'kubernetes-nodes-cadvisor' OR service = 'prometheus-kube-state-metrics') AND container IS NOT NULL AND pod IS NOT NULL FACET namespace, pod, container TIMESERIES 5 minutes SLIDE BY 10 seconds LIMIT MAX) SELECT average(`usage`) AS `usage`, average(`limit`) AS `limit` FACET namespace, pod, container TIMESERIES AUTO LIMIT MAX) SELECT sum(`usage`)/sum(`limit`)*100 FACET namespace TIMESERIES AUTO"
+        query      = "FROM (FROM (FROM Metric SELECT filter(average(container_memory_usage_bytes), WHERE container IN (FROM Metric SELECT uniques(container) WHERE kube_pod_container_resource_limits IS NOT NULL LIMIT MAX)) AS `usage`, filter(max(kube_pod_container_resource_limits), WHERE resource = 'memory') AS `limit` WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND (job = 'kubernetes-nodes-cadvisor' OR service = 'prometheus-kube-state-metrics') AND container IS NOT NULL AND pod IS NOT NULL AND namespace IN ({{namespaces}}) FACET namespace, pod, container TIMESERIES 5 minutes SLIDE BY 10 seconds LIMIT MAX) SELECT average(`usage`) AS `usage`, average(`limit`) AS `limit` FACET namespace, pod, container TIMESERIES AUTO LIMIT MAX) SELECT sum(`usage`)/sum(`limit`)*100 FACET namespace TIMESERIES AUTO"
       }
 
     }
@@ -579,7 +579,7 @@ resource "newrelic_one_dashboard" "infra" {
     }
   }
 
-  # Apps
+  # Nodes
   variable {
     name  = "nodes"
     title = "Nodes"
@@ -592,6 +592,22 @@ resource "newrelic_one_dashboard" "infra" {
     nrql_query {
         account_ids = [var.NEW_RELIC_ACCOUNT_ID]
         query       = "FROM Metric SELECT uniques(node) WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND job = 'kubernetes-service-endpoints' AND service = 'prometheus-prometheus-node-exporter'"
+      }
+  }
+
+  # Namespaces
+  variable {
+    name  = "namespaces"
+    title = "Namespaces"
+    type  = "nrql"
+
+    default_values       = ["*"]
+    replacement_strategy = "default"
+    is_multi_selection   = true
+
+    nrql_query {
+        account_ids = [var.NEW_RELIC_ACCOUNT_ID]
+        query       = "FROM Metric SELECT uniques(namespace) WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND job = 'kubernetes-service-endpoints' AND service = 'prometheus-kube-state-metrics'"
       }
   }
 }
