@@ -21,6 +21,7 @@ done
 
 # Cluster name
 clusterName="mytestcluster"
+appNames='["proxy-oss","persistence-oss"]'
 
 if [[ $flagDestroy != "true" ]]; then
 
@@ -33,6 +34,7 @@ if [[ $flagDestroy != "true" ]]; then
     -var NEW_RELIC_API_KEY=$NEWRELIC_API_KEY \
     -var NEW_RELIC_REGION=$NEWRELIC_REGION \
     -var cluster_name=$clusterName \
+    -var app_names=$appNames \
     -out "./tfplan"
 
   # Apply Terraform
@@ -46,5 +48,6 @@ else
   -var NEW_RELIC_ACCOUNT_ID=$NEWRELIC_ACCOUNT_ID \
   -var NEW_RELIC_API_KEY=$NEWRELIC_API_KEY \
   -var NEW_RELIC_REGION=$NEWRELIC_REGION \
-  -var cluster_name=$clusterName
+  -var cluster_name=$clusterName \
+  -var app_names=$appNames
 fi

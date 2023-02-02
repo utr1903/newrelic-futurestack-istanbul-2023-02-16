@@ -22,3 +22,8 @@ variable "NEW_RELIC_REGION" {
 variable "cluster_name" {
   type = string
 }
+
+# Application names
+variable "app_names" {
+  type = list(string)
+}
