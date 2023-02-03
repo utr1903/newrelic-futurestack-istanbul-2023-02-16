@@ -33,7 +33,7 @@ resource "newrelic_one_dashboard" "apps" {
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "FROM Metric SELECT sum(http_server_requests_seconds_sum)/sum(http_server_requests_seconds_count)*1000 WHERE app IN ({{apps}}) FACET app"
+        query      = "FROM Metric SELECT sum(http_server_duration_sum) / sum(http_server_duration_count) WHERE service_name IN ({{apps}}) FACET service_name"
       }
     }
 
@@ -47,7 +47,7 @@ resource "newrelic_one_dashboard" "apps" {
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "FROM (FROM Metric SELECT rate(sum(http_server_requests_seconds_count), 1 minute) AS `num` WHERE app IN ({{apps}}) FACET app, instance LIMIT MAX) SELECT sum(`num`) FACET app"
+        query      = "FROM (FROM Metric SELECT rate(sum(http_server_requests_count), 1 minute) AS `num` WHERE service_name IN ({{apps}}) FACET service_name, k8s_pod_name LIMIT MAX) SELECT sum(`num`) FACET service_name"
       }
     }
 
@@ -61,7 +61,7 @@ resource "newrelic_one_dashboard" "apps" {
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "FROM Metric SELECT filter(count(http_server_requests_seconds_count), WHERE outcome != 'SUCCESS')/sum(http_server_requests_seconds_count)*100 as 'Average web error rate (%)' WHERE app IN ({{apps}}) FACET app"
+        query      = "FROM Metric SELECT filter(count(http_server_duration_sum), WHERE http_status_code >= 500) / count(http_server_duration_sum) * 100 as 'Average web error rate (%)' WHERE service_name IN ({{apps}}) FACET service_name"
       }
     }
 
@@ -75,7 +75,7 @@ resource "newrelic_one_dashboard" "apps" {
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "FROM Metric SELECT sum(http_server_requests_seconds_sum)/sum(http_server_requests_seconds_count)*1000 WHERE app IN ({{apps}}) FACET app TIMESERIES"
+        query      = "FROM Metric SELECT sum(http_server_duration_sum) / sum(http_server_duration_count) WHERE service_name IN ({{apps}}) FACET service_name TIMESERIES"
       }
     }
 
@@ -89,7 +89,7 @@ resource "newrelic_one_dashboard" "apps" {
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "FROM Metric SELECT sum(http_server_requests_seconds_sum)/sum(http_server_requests_seconds_count)*1000 WHERE app IN ({{apps}}) FACET app, instance TIMESERIES"
+        query      = "FROM Metric SELECT sum(http_server_duration_sum) / sum(http_server_duration_count) WHERE service_name IN ({{apps}}) FACET service_name, k8s_pod_name TIMESERIES"
       }
     }
 
@@ -103,7 +103,7 @@ resource "newrelic_one_dashboard" "apps" {
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "FROM (FROM Metric SELECT rate(sum(http_server_requests_seconds_count), 1 minute) AS `num` WHERE app IN ({{apps}}) FACET app, instance TIMESERIES LIMIT MAX) SELECT sum(`num`) FACET app TIMESERIES"
+        query      = "FROM (FROM Metric SELECT rate(sum(http_server_duration_count), 1 minute) AS `num` WHERE service_name IN ({{apps}}) FACET service_name, k8s_pod_name TIMESERIES LIMIT MAX) SELECT sum(`num`) FACET service_name TIMESERIES"
       }
     }
 
@@ -117,7 +117,7 @@ resource "newrelic_one_dashboard" "apps" {
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "FROM Metric SELECT rate(sum(http_server_requests_seconds_count), 1 minute) AS `num` WHERE app IN ({{apps}}) FACET app, instance TIMESERIES LIMIT MAX"
+        query      = "FROM Metric SELECT rate(sum(http_server_duration_count), 1 minute) AS `num` WHERE service_name IN ({{apps}}) FACET service_name, k8s_pod_name TIMESERIES LIMIT MAX"
       }
     }
 
@@ -131,7 +131,7 @@ resource "newrelic_one_dashboard" "apps" {
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "FROM Metric SELECT filter(count(http_server_requests_seconds_count), WHERE outcome != 'SUCCESS')/sum(http_server_requests_seconds_count)*100 as 'Average web error rate (%)' WHERE app IN ({{apps}}) FACET app TIMESERIES"
+        query      = "FROM Metric SELECT filter(count(http_server_duration_count), WHERE http_status_code >= 500)/count(http_server_duration_count)*100 as 'Average web error rate (%)' WHERE service_name IN ({{apps}}) FACET service_name TIMESERIES"
       }
     }
 
@@ -145,7 +145,7 @@ resource "newrelic_one_dashboard" "apps" {
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "FROM Metric SELECT filter(count(http_server_requests_seconds_count), WHERE outcome != 'SUCCESS')/sum(http_server_requests_seconds_count)*100 as 'Average web error rate (%)' WHERE app IN ({{apps}}) FACET app, instance TIMESERIES"
+        query      = "FROM Metric SELECT filter(count(http_server_duration_count), WHERE http_status_code >= 500)/count(http_server_duration_count)*100 as 'Average web error rate (%)' WHERE service_name IN ({{apps}}) FACET service_name, k8s_pod_name TIMESERIES"
       }
     }
   }
