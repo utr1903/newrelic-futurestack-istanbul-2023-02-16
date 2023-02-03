@@ -5,6 +5,17 @@
 #####################
 
 repoName="futurestack-istanbul"
+clusterName="mytestclusternr"
+
+# nribundle
+declare -A nribundle
+nribundle["name"]="nri-bundle"
+nribundle["namespace"]="monitoring"
+nribundle["privileged"]=true
+nribundle["lowDataMode"]=false
+nribundle["ksm"]=true
+nribundle["kubeEvents"]=true
+nribundle["logging"]=true
 
 # kafka
 declare -A kafka
@@ -57,8 +68,25 @@ docker push "${DOCKERHUB_NAME}/${persistence[imageName]}"
 ###################
 
 # Add helm repos
+helm repo add newrelic https://helm-charts.newrelic.com
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
+
+# nribundle
+helm upgrade ${nribundle[name]} \
+  --install \
+  --wait \
+  --debug \
+  --set global.licenseKey=$NEWRELIC_LICENSE_KEY \
+  --set global.cluster=$clusterName \
+  --create-namespace \
+  --namespace=${nribundle[namespace]} \
+  --set newrelic-infrastructure.privileged=${nribundle[privileged]} \
+  --set global.lowDataMode=${nribundle[lowDataMode]} \
+  --set ksm.enabled=${nribundle[ksm]} \
+  --set kubeEvents.enabled=${nribundle[kubeEvents]} \
+  --set logging.enabled=${nribundle[logging]} \
+  newrelic/nri-bundle
 
 # kafka
 helm upgrade ${kafka[name]} \
