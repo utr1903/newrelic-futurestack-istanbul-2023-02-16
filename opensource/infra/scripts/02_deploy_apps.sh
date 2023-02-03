@@ -5,7 +5,7 @@
 #####################
 
 repoName="futurestack-istanbul"
-clusterName="mytestcluster"
+clusterName="mytestclusteross"
 
 # cert-manager
 declare -A certmanager
