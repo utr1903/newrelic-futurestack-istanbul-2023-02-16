@@ -22,6 +22,7 @@ declare -A otelcollector
 otelcollector["name"]="otel-collector"
 otelcollector["namespace"]="monitoring"
 otelcollector["mode"]="daemonset"
+otelcollector["prometheusPort"]=9464
 
 # nodeexporter
 declare -A nodeexporter
@@ -119,6 +120,7 @@ helm upgrade ${otelcollector[name]} \
   --namespace ${otelcollector[namespace]} \
   --set name=${otelcollector[name]} \
   --set mode=${otelcollector[mode]} \
+  --set prometheus.port=${otelcollector[prometheusPort]} \
   --set newrelicOtlpEndpoint="otlp.eu01.nr-data.net:4317" \
   --set newrelicLicenseKey=$NEWRELIC_LICENSE_KEY \
   "../helm/otelcollector"
