@@ -11,6 +11,12 @@ replicas: 1
 
 # Resources
 resources:
+  # Requests
+  requests:
+    # CPU
+    cpu: 100m
+    # Memory
+    memory: 100Mi
   # Limits
   limits:
     # CPU
