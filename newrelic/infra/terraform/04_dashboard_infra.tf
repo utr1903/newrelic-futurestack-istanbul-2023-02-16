@@ -61,7 +61,7 @@ resource "newrelic_one_dashboard" "kubernetes_cluster_overview" {
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "FROM K8sNodeSample SELECT max(capacityCpuCores) AS 'CPU (cores)', max(capacityMemoryBytes)/1024/1024/1024 AS 'MEM (GiB)' WHERE clusterName = '${var.cluster_name}' FACET nodeName"
+        query      = "FROM K8sNodeSample SELECT max(capacityCpuCores) AS 'CPU (cores)', max(capacityMemoryBytes)/1000/1000/1000 AS 'MEM (GB)' WHERE clusterName = '${var.cluster_name}' FACET nodeName"
       }
     }
 
@@ -147,7 +147,7 @@ resource "newrelic_one_dashboard" "kubernetes_cluster_overview" {
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "FROM K8sNodeSample SELECT max(memoryUsedBytes) AS `MEM (bytes)` WHERE clusterName = '${var.cluster_name}' FACET nodeName TIMESERIES LIMIT MAX"
+        query      = "FROM K8sNodeSample SELECT max(capacityMemoryBytes) - max(memoryAvailableBytes) AS `MEM (bytes)` WHERE clusterName = '${var.cluster_name}' FACET nodeName TIMESERIES LIMIT MAX"
       }
     }
 
@@ -161,7 +161,7 @@ resource "newrelic_one_dashboard" "kubernetes_cluster_overview" {
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "FROM K8sNodeSample SELECT max(memoryUsedBytes)/max(capacityMemoryBytes)*100 WHERE clusterName = '${var.cluster_name}' FACET nodeName TIMESERIES LIMIT MAX"
+        query      = "FROM K8sNodeSample SELECT (max(capacityMemoryBytes) - max(memoryAvailableBytes))/max(capacityMemoryBytes)*100 WHERE clusterName = '${var.cluster_name}' FACET nodeName TIMESERIES LIMIT MAX"
       }
     }
 

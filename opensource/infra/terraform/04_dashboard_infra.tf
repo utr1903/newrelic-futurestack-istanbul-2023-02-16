@@ -75,7 +75,7 @@ resource "newrelic_one_dashboard" "infra" {
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "FROM Metric SELECT uniqueCount(cpu) AS 'CPU (cores)', max(node_memory_MemTotal_bytes)/1024/1024/1024 AS 'MEM (GB)' WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND job = 'kubernetes-service-endpoints' AND service ='prometheus-prometheus-node-exporter' AND node IN ({{nodes}}) FACET node"
+        query      = "FROM Metric SELECT uniqueCount(cpu) AS 'CPU (cores)', max(node_memory_MemTotal_bytes)/1000/1000/1000 AS 'MEM (GB)' WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND job = 'kubernetes-service-endpoints' AND service ='prometheus-prometheus-node-exporter' AND node IN ({{nodes}}) FACET node"
       }
     }
 
@@ -89,7 +89,7 @@ resource "newrelic_one_dashboard" "infra" {
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "FROM (FROM (FROM Metric SELECT uniqueCount(cpu)*rate(filter(average(node_cpu_seconds_total), WHERE mode != 'idle'), 1 SECONDS) AS `usage_across_all_cpus` WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND job = 'kubernetes-service-endpoints' AND service = 'prometheus-prometheus-node-exporter' AND node IN ({{nodes}}) FACET node LIMIT MAX TIMESERIES 5 minutes SLIDE BY 10 seconds) SELECT average(`usage_across_all_cpus`) AS `usage_across_all_cpus` FACET node LIMIT MAX TIMESERIES AUTO) SELECT 1000*sum(`usage_across_all_cpus`) FACET node TIMESERIES"
+        query      = "FROM Metric SELECT rate(filter(sum(node_cpu_seconds_total), WHERE mode != 'idle'), 1 SECONDS)*1000 WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND job = 'kubernetes-service-endpoints' AND service = 'prometheus-prometheus-node-exporter' AND node IN ({{nodes}}) FACET node LIMIT MAX TIMESERIES"
       }
     }
 
@@ -103,7 +103,7 @@ resource "newrelic_one_dashboard" "infra" {
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "FROM (FROM (FROM Metric SELECT uniqueCount(cpu)*rate(filter(average(node_cpu_seconds_total), WHERE mode != 'idle'), 1 SECONDS) AS `usage_across_all_cpus` WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND job = 'kubernetes-service-endpoints' AND service = 'prometheus-prometheus-node-exporter' AND node IN ({{nodes}}) FACET node LIMIT MAX TIMESERIES 5 minutes SLIDE BY 10 seconds) SELECT average(`usage_across_all_cpus`) AS `usage_across_all_cpus` FACET node LIMIT MAX TIMESERIES AUTO) SELECT 100*sum(`usage_across_all_cpus`) FACET node TIMESERIES"
+        query      = "FROM Metric SELECT rate(filter(sum(node_cpu_seconds_total), WHERE mode != 'idle'), 1 SECONDS)/uniqueCount(cpu)*100 WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND job = 'kubernetes-service-endpoints' AND service = 'prometheus-prometheus-node-exporter' AND node IN ({{nodes}}) FACET node LIMIT MAX TIMESERIES"
       }
     }
 
@@ -117,7 +117,7 @@ resource "newrelic_one_dashboard" "infra" {
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "SELECT average(node_memory_MemTotal_bytes) - (average(node_memory_MemFree_bytes) + average(node_memory_Cached_bytes) + average(node_memory_Buffers_bytes)) FROM Metric WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND job = 'kubernetes-service-endpoints' AND service = 'prometheus-prometheus-node-exporter' AND node IN ({{nodes}}) FACET node LIMIT 100 TIMESERIES AUTO"
+        query      = "FROM Metric SELECT average(node_memory_MemTotal_bytes) - (average(node_memory_MemFree_bytes) + average(node_memory_Cached_bytes) + average(node_memory_Buffers_bytes)) WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND job = 'kubernetes-service-endpoints' AND service = 'prometheus-prometheus-node-exporter' AND node IN ({{nodes}}) FACET node LIMIT 100 TIMESERIES AUTO"
       }
     }
 
@@ -131,7 +131,7 @@ resource "newrelic_one_dashboard" "infra" {
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "SELECT (100 * (1 - ((average(node_memory_MemFree_bytes) + average(node_memory_Cached_bytes) + average(node_memory_Buffers_bytes)) / average(node_memory_MemTotal_bytes)))) FROM Metric WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND job = 'kubernetes-service-endpoints' AND service = 'prometheus-prometheus-node-exporter' AND node IN ({{nodes}}) FACET node TIMESERIES AUTO"
+        query      = "FROM Metric SELECT (100 * (1 - ((average(node_memory_MemFree_bytes) + average(node_memory_Cached_bytes) + average(node_memory_Buffers_bytes)) / average(node_memory_MemTotal_bytes)))) WHERE instrumentation.provider = 'prometheus' AND prometheus_server = '${var.cluster_name}' AND job = 'kubernetes-service-endpoints' AND service = 'prometheus-prometheus-node-exporter' AND node IN ({{nodes}}) FACET node TIMESERIES AUTO"
       }
     }
 
