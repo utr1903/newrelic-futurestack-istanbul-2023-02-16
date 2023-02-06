@@ -20,8 +20,8 @@ done
 ### Set variables
 
 # Cluster name
-clusterName="mytestclusteross"
-appNames='["proxy-oss","persistence-oss"]'
+clusterName="mytestclusternr"
+appNames='["proxy-nr","persistence-nr"]'
 
 if [[ $flagDestroy != "true" ]]; then
 
