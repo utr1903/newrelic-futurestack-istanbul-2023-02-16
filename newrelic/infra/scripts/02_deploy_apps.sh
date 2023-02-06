@@ -34,7 +34,8 @@ mysql["database"]="futurestack"
 # proxy
 declare -A proxy
 proxy["name"]="proxy-nr"
-proxy["imageName"]="${repoName}:${proxy[name]}"
+proxy["platform"]="amd"
+proxy["imageName"]="${repoName}:${proxy[name]}-${proxy[platform]}"
 proxy["namespace"]="apps"
 proxy["replicas"]=2
 proxy["port"]=8080
@@ -42,7 +43,8 @@ proxy["port"]=8080
 # persistence
 declare -A persistence
 persistence["name"]="persistence-nr"
-persistence["imageName"]="${repoName}:${persistence[name]}"
+persistence["platform"]="amd"
+persistence["imageName"]="${repoName}:${persistence[name]}-${persistence[platform]}"
 persistence["namespace"]="apps"
 persistence["replicas"]=2
 persistence["port"]=8080
@@ -53,12 +55,14 @@ persistence["port"]=8080
 
 # proxy
 docker build \
+  --platform linux/amd64 \
   --tag "${DOCKERHUB_NAME}/${proxy[imageName]}" \
   "../../apps/proxy/."
 docker push "${DOCKERHUB_NAME}/${proxy[imageName]}"
 
 # persistence
 docker build \
+  --platform linux/amd64 \
   --tag "${DOCKERHUB_NAME}/${persistence[imageName]}" \
   "../../apps/persistence/."
 docker push "${DOCKERHUB_NAME}/${persistence[imageName]}"
