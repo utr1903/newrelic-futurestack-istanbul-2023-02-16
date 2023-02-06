@@ -131,7 +131,7 @@ resource "newrelic_one_dashboard" "apps" {
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "FROM Metric SELECT filter(count(http_server_duration_count), WHERE http_status_code >= 500)/count(http_server_duration_count)*100 as 'Average web error rate (%)' WHERE service_name IN ({{apps}}) FACET service_name TIMESERIES"
+        query      = "FROM Metric SELECT filter(count(http_server_duration_count), WHERE numeric(http_status_code) >= 500)/count(http_server_duration_count)*100 as 'Average web error rate (%)' WHERE service_name IN ({{apps}}) FACET service_name TIMESERIES"
       }
     }
 
@@ -145,7 +145,7 @@ resource "newrelic_one_dashboard" "apps" {
 
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
-        query      = "FROM Metric SELECT filter(count(http_server_duration_count), WHERE http_status_code >= 500)/count(http_server_duration_count)*100 as 'Average web error rate (%)' WHERE service_name IN ({{apps}}) FACET service_name, k8s_pod_name TIMESERIES"
+        query      = "FROM Metric SELECT filter(count(http_server_duration_count), WHERE numeric(http_status_code) >= 500)/count(http_server_duration_count)*100 as 'Average web error rate (%)' WHERE service_name IN ({{apps}}) FACET service_name, k8s_pod_name TIMESERIES"
       }
     }
   }
